@@ -22,4 +22,32 @@ public class Station {
         this.changeLines = changeLines;
         this.metro = metro;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Station getPrevisionStation() {
+        return previsionStation;
+    }
+
+    public Station getNextStation() {
+        return nextStation;
+    }
+
+    public Duration getTimeToNextStation() {
+        return timeToNextStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Line getChangeLines() {
+        return changeLines;
+    }
+
+    public Metro getMetro() {
+        return metro;
+    }
 }
