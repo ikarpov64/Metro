@@ -10,4 +10,16 @@ public class Line {
         this.metro = metro;
 
     }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public Metro getMetro() {
+        return metro;
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
 }
