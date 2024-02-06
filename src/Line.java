@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Line {
     private final Color color;
     private final Metro metro;
-    private List<Station> stations = new LinkedList<>();
+    private LinkedList<Station> stations = new LinkedList<>();
 
     public Line(Color color, Metro metro) {
         this.color = color;
@@ -21,7 +21,7 @@ public class Line {
         return metro;
     }
 
-    public List<Station> getStations() {
+    public LinkedList<Station> getStations() {
         return stations;
     }
 

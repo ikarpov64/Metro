@@ -1,5 +1,6 @@
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -16,10 +17,8 @@ public class Metro {
         }
     }
 
-
     public void createFirstStationInLine(Color color,
                                          String name,
-                                         Duration duration,
                                          List<Station> changeStations) {
         if (!isLineExists(color)) {
             System.out.println("Line not exist. Build a subway line first");
@@ -43,6 +42,44 @@ public class Metro {
         }
     }
 
+    public void createLastStationInLine(Color color,
+                                        String name,
+                                        Duration duration,
+                                        List<Station> transferList) {
+
+        if (!isLineExists(color)) {
+            System.out.println("Line not exist. Build a subway line first");
+            // Тут нужно эксепшн так как линия не создана.
+        }
+
+        if (isStationExists(name)) {
+            System.out.println("Station is already exist.");
+            // Тут эксепшн так как станция в метро с таким именем уже имеется.
+        }
+
+        if (duration.getSeconds() == 0) {
+            System.out.println("Transit time cannot be zero");
+        }
+
+
+
+        Station previsionStation = isPrevisionStationExist(color);
+
+
+    }
+
+    private Station isPrevisionStationExist(Color color) {
+        if (!lineIsEmpty(color)) {
+            return lines.stream().filter(line -> line.getColor() == color)
+                    .findFirst().get().getStations().getLast();
+        }
+        return null;
+    }
+
+    private boolean isLineExists(Color color) {
+        return lines.stream().anyMatch(line -> line.getColor() == color);
+    }
+
     private boolean lineIsEmpty (Color color) {
         return lines.stream()
                 .filter(line -> line.getColor() == color)
@@ -55,16 +92,6 @@ public class Metro {
                 .anyMatch(station -> station.getName().equals(name));  // Проверяем, есть ли среди станций станция name
     }
 
-    private boolean isLineExists(Color color) {
-        return lines.stream().anyMatch(line -> line.getColor() == color);
-    }
-
-    public void createLastStationInLine(Color color,
-                                        String name,
-                                        Duration duration,
-                                        List<Station> transferList) {
-
-    }
 
     @Override
     public String toString() {
