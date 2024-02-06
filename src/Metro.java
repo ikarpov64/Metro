@@ -1,55 +1,62 @@
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Metro {
-    private final String cityName = "Пермь";
-    private List<Line> lines = new ArrayList<>();
+    private final String city = "Пермь";
+    private Set<Line> lines = new HashSet<>();
 
     public void createNewLine(Color color) {
-        lines.add(new Line(color, this));
+        if (!isLineExists(color)) {
+            lines.add(new Line(color, this));
+        } else {
+            System.out.println("Такая линия уже существует. " + color.color);
+        }
     }
+
 
     public void createFirstStationInLine(Color color,
                                          String name,
                                          Duration duration,
-                                         Line changeLines) {
-        if (lineNotExist(color)) {
-            System.out.println("Line not available");
-        }
-        if (!stationNotExist(name)) {
-            System.out.println("Station is already exist.");
+                                         List<Station> changeStations) {
+        if (!isLineExists(color)) {
+            System.out.println("Line not exist. Build a subway line first");
+            // Тут нужно эксепшн так как линия не создана.
         }
 
         if (!lineIsEmpty(color)) {
             System.out.println("Line is not empty, cannot create first station in Line");
+            // Тут эксепшн потому что первая линия уже имеется.
         }
 
+        if (isStationExists(name)) {
+            System.out.println("Station is already exist.");
+            // Тут эксепшн так как станция в метро с таким именем уже имеется.
+        } else {
+            lines.stream()
+                    .filter(line -> line.getColor() == color) // Фильтруем по красной линии
+                    .findFirst()                              // Берем первую попавшуюся красную линию
+                    .ifPresent(line -> line.getStations()
+                            .add(new Station(name, line,this))); // Добавляем станцию в линию RED
+        }
     }
 
-    private boolean lineIsEmpty(Color color) {
-        return lines == null
-                || lines.stream()
+    private boolean lineIsEmpty (Color color) {
+        return lines.stream()
                 .filter(line -> line.getColor() == color)
-                .map(Line::getStations)
-                .findAny().isEmpty();
+                .anyMatch(line -> line.getStations().isEmpty());
     }
 
-    private boolean stationNotExist(String name) {
-        return lines == null || lines.stream()
-                .peek(line -> line.getStations()
-                        .stream()
-                        .peek(station -> station.getName().equals(name))
-                        .findAny()
-                        .isPresent())
-                .isParallel();
+    private boolean isStationExists(String name) {
+        return lines.stream()                                          // Получаем поток линий
+                .flatMap(line -> line.getStations().stream())          // Преобразуем каждую линию в поток её станций
+                .anyMatch(station -> station.getName().equals(name));  // Проверяем, есть ли среди станций станция name
     }
 
-    private boolean lineNotExist(Color color) {
-        return lines == null
-                || lines.stream().noneMatch(line -> line.getColor() == color);
+    private boolean isLineExists(Color color) {
+        return lines.stream().anyMatch(line -> line.getColor() == color);
     }
 
     public void createLastStationInLine(Color color,
@@ -57,5 +64,13 @@ public class Metro {
                                         Duration duration,
                                         List<Station> transferList) {
 
+    }
+
+    @Override
+    public String toString() {
+        return "Metro{" +
+                "city='" + city + '\'' +
+                ", lines=" + lines +
+                '}';
     }
 }

@@ -3,23 +3,29 @@ import java.util.List;
 
 public class Station {
     private final String name;
-    private Station previsionStation;
+    private Station prevStation;
     private Station nextStation;
     private Duration timeToNextStation;
     private Line line;
-    private Line changeLines;
+    private Station changeStation;
     private Metro metro;
 
 
-    public Station(String name, Station previsionStation,
+    public Station(String name, Station prevStation,
                    Station nextStation, Duration timeToNextStation,
-                   Line line, Line changeLines, Metro metro) {
+                   Line line, Station changeStation, Metro metro) {
         this.name = name;
-        this.previsionStation = previsionStation;
+        this.prevStation = prevStation;
         this.nextStation = nextStation;
         this.timeToNextStation = timeToNextStation;
         this.line = line;
-        this.changeLines = changeLines;
+        this.changeStation = changeStation;
+        this.metro = metro;
+    }
+
+    public Station(String name, Line line, Metro metro) {
+        this.name = name;
+        this.line = line;
         this.metro = metro;
     }
 
@@ -27,8 +33,8 @@ public class Station {
         return name;
     }
 
-    public Station getPrevisionStation() {
-        return previsionStation;
+    public Station getPrevStation() {
+        return prevStation;
     }
 
     public Station getNextStation() {
@@ -43,11 +49,19 @@ public class Station {
         return line;
     }
 
-    public Line getChangeLines() {
-        return changeLines;
+    public Station getChangeStation() {
+        return changeStation;
     }
 
     public Metro getMetro() {
         return metro;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "name='" + name + '\'' +
+                ", changeLines=" + line.getColor() +
+                '}';
     }
 }
