@@ -57,6 +57,10 @@ public class Station {
         return metro;
     }
 
+    public void setTimeToNextStation(Duration timeToNextStation) {
+        this.timeToNextStation = timeToNextStation;
+    }
+
     @Override
     public String toString() {
         return "Station{" +

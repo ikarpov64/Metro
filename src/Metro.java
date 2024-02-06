@@ -1,8 +1,5 @@
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Metro {
@@ -62,18 +59,33 @@ public class Metro {
         }
 
 
-
         Station previsionStation = isPrevisionStationExist(color);
+        if (previsionStation != null) {
+            previsionStation.setTimeToNextStation(duration);
+        }
 
+    }
+
+    private Station getPrevisionStation(Color color) {
 
     }
 
     private Station isPrevisionStationExist(Color color) {
-        if (!lineIsEmpty(color)) {
-            return lines.stream().filter(line -> line.getColor() == color)
-                    .findFirst().get().getStations().getLast();
-        }
-        return null;
+//        if (!lineIsEmpty(color)) {
+            Optional<Line> line = lines.stream()
+                    .filter(l -> l.getColor() == color)
+                    .findFirst();
+
+            return line.map(Line::getStations)
+                    .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
+                    .orElse(null);
+
+
+
+//            Station station = lines.stream().filter(line -> line.getColor() == color)
+//                    .findFirst().get().getStations().getLast();
+////        }
+//        return null;
     }
 
     private boolean isLineExists(Color color) {
