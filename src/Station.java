@@ -61,6 +61,14 @@ public class Station {
         this.timeToNextStation = timeToNextStation;
     }
 
+    public void setPrevStation(Station prevStation) {
+        this.prevStation = prevStation;
+    }
+
+    public void setNextStation(Station nextStation) {
+        this.nextStation = nextStation;
+    }
+
     @Override
     public String toString() {
         return "Station{" +

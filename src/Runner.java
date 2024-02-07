@@ -1,4 +1,5 @@
 import java.time.Duration;
+import java.util.LinkedList;
 
 public class Runner {
     public static void main(String[] args) {
@@ -36,6 +37,16 @@ public class Runner {
         System.out.println(metro);
         // Station is already exist.
         // Metro{city='Пермь', lines=[Line{color=RED, stations=[Station{name='Спортивная', changeLines=RED}, Station{name='Спортивная1', changeLines=RED}]}, Line{color=BLUE, stations=[]}]}
+        System.out.println("____________________________________________________");
+
+        metro.createLastStationInLine(Color.RED, "Спортивная1", Duration.ofSeconds(150), null);
+        System.out.println(metro);
+        System.out.println("____________________________________________________");
+
+        metro.createLastStationInLine(Color.RED, "Спортивная2", Duration.ofSeconds(150), null);
+        System.out.println(metro);
+        System.out.println("____________________________________________________");
+
 
     }
 }

@@ -1,6 +1,5 @@
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Metro {
     private final String city = "Пермь";
@@ -19,11 +18,13 @@ public class Metro {
                                          List<Station> changeStations) {
         if (!isLineExists(color)) {
             System.out.println("Line not exist. Build a subway line first");
+            return;
             // Тут нужно эксепшн так как линия не создана.
         }
 
         if (!lineIsEmpty(color)) {
             System.out.println("Line is not empty, cannot create first station in Line");
+            return;
             // Тут эксепшн потому что первая линия уже имеется.
         }
 
@@ -31,11 +32,7 @@ public class Metro {
             System.out.println("Station is already exist.");
             // Тут эксепшн так как станция в метро с таким именем уже имеется.
         } else {
-            lines.stream()
-                    .filter(line -> line.getColor() == color) // Фильтруем по красной линии
-                    .findFirst()                              // Берем первую попавшуюся красную линию
-                    .ifPresent(line -> line.getStations()
-                            .add(new Station(name, line,this))); // Добавляем станцию в линию RED
+            createStationInLine(color, name);
         }
     }
 
@@ -46,28 +43,50 @@ public class Metro {
 
         if (!isLineExists(color)) {
             System.out.println("Line not exist. Build a subway line first");
+            return;
             // Тут нужно эксепшн так как линия не создана.
         }
 
         if (isStationExists(name)) {
             System.out.println("Station is already exist.");
+            return;
             // Тут эксепшн так как станция в метро с таким именем уже имеется.
         }
 
         if (duration.getSeconds() == 0) {
             System.out.println("Transit time cannot be zero");
+            return;
         }
 
-
-        Station previsionStation = isPrevisionStationExist(color);
-        if (previsionStation != null) {
-            previsionStation.setTimeToNextStation(duration);
+        if (lineIsEmpty(color)) {
+            System.out.println("The first station does not exist, create the first station in the line first");
+            return;
         }
 
+        Line currentLine = getLine(color);
+        LinkedList<Station> stations = currentLine.getStations();
+        Station lastStation = stations.getLast();
+        Station currentStation = new Station(name, currentLine, this);
+        currentStation.setPrevStation(lastStation);
+        lastStation.setTimeToNextStation(duration);
+        lastStation.setNextStation(currentStation);
+        stations.add(currentStation);
     }
 
-    private Station getPrevisionStation(Color color) {
 
+    private void createStationInLine(Color color, String name) {
+        lines.stream()
+                .filter(line -> color.equals(line.getColor()))  // Фильтруем по цвету линии
+                .findFirst()                                    // Берем первую попавшуюся линию по цвету
+                .ifPresent(line -> line.getStations()
+                        .add(new Station(name, line,this))); // Добавляем станцию в линию по цвету
+    }
+
+    private Line getLine(Color color) {
+        return lines.stream()                                   // Получаем поток линий
+                .filter(line -> color.equals(line.getColor()))  // Фильтруем по цвету линии
+                .findFirst()                                    // Берем первую попавшуюся линию по цвету
+                .orElseThrow();                                 // Возвращаем найденную линию
     }
 
     private Station isPrevisionStationExist(Color color) {
@@ -80,30 +99,37 @@ public class Metro {
                     .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
                     .orElse(null);
 
-
-
 //            Station station = lines.stream().filter(line -> line.getColor() == color)
 //                    .findFirst().get().getStations().getLast();
-////        }
+//        }
 //        return null;
     }
 
+    /**
+     * Проверка существования линии по цвету.
+     */
     private boolean isLineExists(Color color) {
-        return lines.stream().anyMatch(line -> line.getColor() == color);
+        return lines.stream()                                        // Получаем поток линий
+                .anyMatch(line -> color.equals(line.getColor()));    // Проверяем существует ли линия с цветом
     }
 
+    /**
+     * Проверка на наличие станций в линии.
+     */
     private boolean lineIsEmpty (Color color) {
-        return lines.stream()
-                .filter(line -> line.getColor() == color)
-                .anyMatch(line -> line.getStations().isEmpty());
+        return lines.stream()                                       // Получаем поток линий
+                .filter(line -> color.equals(line.getColor()))      // Фильтруем по цвету линии
+                .anyMatch(line -> line.getStations().isEmpty());    // Проверяем список станций в линии на пустоту
     }
 
+    /**
+     * Проверка на существование станции по имени.
+     */
     private boolean isStationExists(String name) {
         return lines.stream()                                          // Получаем поток линий
                 .flatMap(line -> line.getStations().stream())          // Преобразуем каждую линию в поток её станций
-                .anyMatch(station -> station.getName().equals(name));  // Проверяем, есть ли среди станций станция name
+                .anyMatch(station -> name.equals(station.getName()));  // Проверяем существование станции по имени
     }
-
 
     @Override
     public String toString() {
