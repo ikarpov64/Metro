@@ -122,6 +122,17 @@ public class Metro {
                 .findFirst().orElseThrow();
     }
 
+    private int numberOfRunsBetweenStationsOutsideLines(Station startStation, Station endStation) {
+        if (startStation.getLine().equals(endStation.getLine())) {
+            return numberOfRunsBetweenStationsWithinLine(startStation, endStation);
+        }
+        Station transferStationFirstLine = getTransferStation(startStation.getLine(), endStation.getLine());
+
+
+
+        return 0;
+    }
+
     /**
      * Считаем количество перегонов между двумя станциями на одной линии.
      * Вначале считаем в прямом направлении, затем в обратном.
@@ -129,7 +140,7 @@ public class Metro {
      * @param endStation Конечная станция, до которой хотим доехать.
      * @return RuntimeException если нет перегона между станциями.
      */
-    public int numberOfRunsBetweenStations(Station startStation, Station endStation) {
+    public int numberOfRunsBetweenStationsWithinLine(Station startStation, Station endStation) {
         int numberOfRuns = calculateNumberOfRunsForwardDirection(startStation, endStation);
         if (numberOfRuns != -1) {
             return numberOfRuns;
