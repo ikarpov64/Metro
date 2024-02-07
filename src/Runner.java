@@ -33,7 +33,7 @@ public class Runner {
         System.out.println("____________________________________________________");
 
         // Создаем станцию на синей ветке с существующим именем.
-        metro.createFirstStationInLine(Color.BLUE, "Спортивная", null);
+        metro.createFirstStationInLine(Color.BLUE, "СпортивнаяБлу", null);
         System.out.println(metro);
         // Station is already exist.
         // Metro{city='Пермь', lines=[Line{color=RED, stations=[Station{name='Спортивная', changeLines=RED}, Station{name='Спортивная1', changeLines=RED}]}, Line{color=BLUE, stations=[]}]}
@@ -43,10 +43,18 @@ public class Runner {
         System.out.println(metro);
         System.out.println("____________________________________________________");
 
+
+
         metro.createLastStationInLine(Color.RED, "Спортивная2", Duration.ofSeconds(150), null);
+        metro.createLastStationInLine(Color.RED, "Спортивная3", Duration.ofSeconds(150), null);
+        metro.createLastStationInLine(Color.RED, "Спортивная4", Duration.ofSeconds(150), null);
         System.out.println(metro);
         System.out.println("____________________________________________________");
 
 
+        Station first = metro.getLines().stream().filter(line -> Color.RED.equals(line.getColor())).findFirst().get().getStations().getFirst();
+        Station last = metro.getLines().stream().filter(line -> Color.RED.equals(line.getColor())).findFirst().get().getStations().getLast();
+        Station blue = metro.getLines().stream().filter(line -> Color.BLUE.equals(line.getColor())).findFirst().get().getStations().getLast();
+        System.out.println(metro.numberOfRunsBetweenStations(first, last));
     }
 }

@@ -1,25 +1,25 @@
 import java.time.Duration;
-import java.util.List;
+import java.util.ArrayList;
 
 public class Station {
     private final String name;
+    private final Line line;
+    private final Metro metro;
     private Station prevStation;
     private Station nextStation;
     private Duration timeToNextStation;
-    private Line line;
-    private Station changeStation;
-    private Metro metro;
+    private ArrayList<Station> transferStations;
 
 
     public Station(String name, Station prevStation,
                    Station nextStation, Duration timeToNextStation,
-                   Line line, Station changeStation, Metro metro) {
+                   Line line, ArrayList<Station> transferStations, Metro metro) {
         this.name = name;
         this.prevStation = prevStation;
         this.nextStation = nextStation;
         this.timeToNextStation = timeToNextStation;
         this.line = line;
-        this.changeStation = changeStation;
+        this.transferStations = transferStations;
         this.metro = metro;
     }
 
@@ -49,8 +49,12 @@ public class Station {
         return line;
     }
 
-    public Station getChangeStation() {
-        return changeStation;
+    public ArrayList<Station> getTransferStations() {
+        return transferStations;
+    }
+
+    public void setTransferStations(ArrayList<Station> transferStations) {
+        this.transferStations = transferStations;
     }
 
     public Metro getMetro() {
@@ -73,7 +77,7 @@ public class Station {
     public String toString() {
         return "Station{" +
                 "name='" + name + '\'' +
-                ", changeLines=" + line.getColor() +
+                ", changeLines=" + (transferStations == null ? null : transferStations) +
                 '}';
     }
 }
