@@ -8,7 +8,7 @@ public class Station {
     private Station prevStation;
     private Station nextStation;
     private Duration timeToNextStation;
-    private ArrayList<Station> transferStations;
+    private ArrayList<Station> transferStations = new ArrayList<>();
 
 
     public Station(String name, Station prevStation,

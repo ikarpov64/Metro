@@ -114,7 +114,7 @@ public class Metro {
      * @param endLine линия на которую осуществляется пересадка.
      * @return Станция на линии startLine с которой можно осуществить пересадку.
      */
-    private Station getTransferStation(Line startLine, Line endLine) {
+    public Station getTransferStation(Line startLine, Line endLine) {
         return startLine.getStations()
                 .stream()
                 .flatMap(station -> station.getTransferStations().stream())
@@ -144,6 +144,12 @@ public class Metro {
                     + endStation.getName());
     }
 
+    /**
+     * Подсчет количества перегонов с одной станции на другой в прямом направлении.
+     * @param startStation станция начала движения
+     * @param endStation точка назначения.
+     * @return -1 если нет перегона в прямом направлении.
+     */
     private int calculateNumberOfRunsForwardDirection(Station startStation, Station endStation) {
         int numberOfRuns = 0;
         Station currentStation = startStation;
@@ -154,6 +160,12 @@ public class Metro {
         return currentStation != null ? numberOfRuns : -1;
     }
 
+    /**
+     * Подсчет количества перегонов с одной станции на другой в обратном направлении.
+     * @param startStation станция начала движения
+     * @param endStation точка назначения.
+     * @return -1 если нет перегона в обратном направлении.
+     */
     private int calculateNumberOfRunsBackwardsDirection(Station startStation, Station endStation) {
         int numberOfRuns = 0;
         Station currentStation = startStation;

@@ -51,10 +51,22 @@ public class Runner {
         System.out.println(metro);
         System.out.println("____________________________________________________");
 
-
+        // Подсчет количества перегонов на одной линии.
         Station first = metro.getLines().stream().filter(line -> Color.RED.equals(line.getColor())).findFirst().get().getStations().getFirst();
         Station last = metro.getLines().stream().filter(line -> Color.RED.equals(line.getColor())).findFirst().get().getStations().getLast();
         Station blue = metro.getLines().stream().filter(line -> Color.BLUE.equals(line.getColor())).findFirst().get().getStations().getLast();
         System.out.println(metro.numberOfRunsBetweenStations(first, last));
+
+
+        // Поиск станции пересадки на линиях
+
+        Line lineRed = metro.getLines().stream().filter(l -> Color.RED.equals(l.getColor())).findFirst().orElseThrow();
+        Line lineBlue = metro.getLines().stream().filter(l -> Color.BLUE.equals(l.getColor())).findFirst().orElseThrow();
+
+        System.out.println(metro.getTransferStation(lineRed, lineBlue));
+
+
+
+
     }
 }
