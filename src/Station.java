@@ -77,7 +77,11 @@ public class Station {
     public String toString() {
         return "Station{" +
                 "name='" + name + '\'' +
-                ", changeLines=" + (transferStations == null ? null : transferStations) +
+                ", changeLines="
+                + transferStations.stream()
+                .map(Station::getName)
+                .reduce((name1, name2) -> name1 + ", " + name2)
+                .orElse(null) +
                 '}';
     }
 }

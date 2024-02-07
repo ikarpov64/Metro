@@ -1,5 +1,7 @@
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Runner {
     public static void main(String[] args) {
@@ -57,13 +59,17 @@ public class Runner {
         Station blue = metro.getLines().stream().filter(line -> Color.BLUE.equals(line.getColor())).findFirst().get().getStations().getLast();
         System.out.println(metro.numberOfRunsBetweenStations(first, last));
 
+        first.setTransferStations(new ArrayList<>(List.of(blue)));
+        blue.setTransferStations(new ArrayList<>(List.of(first)));
 
         // Поиск станции пересадки на линиях
 
         Line lineRed = metro.getLines().stream().filter(l -> Color.RED.equals(l.getColor())).findFirst().orElseThrow();
         Line lineBlue = metro.getLines().stream().filter(l -> Color.BLUE.equals(l.getColor())).findFirst().orElseThrow();
+        System.out.println(metro);
 
         System.out.println(metro.getTransferStation(lineRed, lineBlue));
+        System.out.println(metro.getTransferStation(lineBlue, lineRed));
 
 
 
