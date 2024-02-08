@@ -85,9 +85,10 @@ public class Metro {
     }
 
     /**
-     * Создание первой станции на линии метро
+     * Создание последней станции на линии метро.
      * @param name Название станции.
      * @param color Цвет линии метро.
+     * @param duration Время перегона от предыдущей станции к текущей станции.
      * @param transferStations Список станций на пересадку.
      */
     public void createLastStationInLine(Color color,
