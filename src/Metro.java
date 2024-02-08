@@ -1,6 +1,5 @@
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Metro {
     private final String city = "Пермь";
@@ -55,13 +54,11 @@ public class Metro {
         if (!isLineExists(color)) {
             System.out.println("Line not exist. Build a subway line first");
             return;
-            // Тут нужно эксепшн так как линия не создана.
         }
 
         if (isStationExists(name)) {
             System.out.println("Station is already exist.");
             return;
-            // Тут эксепшн так как станция в метро с таким именем уже имеется.
         }
 
         if (duration.getSeconds() == 0) {
@@ -115,22 +112,37 @@ public class Metro {
      * @return Станция на линии startLine с которой можно осуществить пересадку.
      */
     public Station getTransferStation(Line startLine, Line endLine) {
-        return startLine.getStations()
+        return endLine.getStations()
                 .stream()
                 .flatMap(station -> station.getTransferStations().stream())
-                .filter(station -> endLine.equals(station.getLine()))
+                .filter(station -> startLine.equals(station.getLine()))
                 .findFirst().orElseThrow();
     }
 
-    private int numberOfRunsBetweenStationsOutsideLines(Station startStation, Station endStation) {
+    /**
+     * Считаем количество перегонов между станциями на разных линиях.
+     * Если у станций совпадают линии, идет расчет количества перегонов на одной линии.
+     * Если линии не совпадают, ищутся станции пересадки, затем происходит расчет:
+     * Линия1: startStation - СтанцияПересадки, Линия2: СтанцияПересадки - endStation.
+     * @param startStation станция посадки и начала движения.
+     * @param endStation станция пункта назначения.
+     * @return Количество перегонов между станциями. -1 если маршрута не существует.
+     */
+    public int numberOfRunsBetweenStationsOutsideLines(Station startStation, Station endStation) {
         if (startStation.getLine().equals(endStation.getLine())) {
             return numberOfRunsBetweenStationsWithinLine(startStation, endStation);
         }
-        Station transferStationFirstLine = getTransferStation(startStation.getLine(), endStation.getLine());
-
-
-
-        return 0;
+        try {
+            Station transferStationStartLine = getTransferStation(startStation.getLine(), endStation.getLine());
+            Station transferStationEndLine = getTransferStation(endStation.getLine(), startStation.getLine());
+            int numbersOfRuns = numberOfRunsBetweenStationsWithinLine(startStation, transferStationStartLine);
+            numbersOfRuns += numberOfRunsBetweenStationsWithinLine(transferStationEndLine, endStation);
+            return numbersOfRuns;
+        } catch (NoSuchElementException ignored) {
+            System.out.printf("Невозможно проложить маршрут от станции %s к станции %s.\n",
+                    startStation, endStation);
+            return -1;
+        }
     }
 
     /**

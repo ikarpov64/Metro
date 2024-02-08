@@ -50,17 +50,21 @@ public class Runner {
         metro.createLastStationInLine(Color.RED, "Спортивная2", Duration.ofSeconds(150), null);
         metro.createLastStationInLine(Color.RED, "Спортивная3", Duration.ofSeconds(150), null);
         metro.createLastStationInLine(Color.RED, "Спортивная4", Duration.ofSeconds(150), null);
+        metro.createLastStationInLine(Color.BLUE, "СпортивнаяБлу2", Duration.ofSeconds(150), null);
+        metro.createLastStationInLine(Color.BLUE, "СпортивнаяБлу3", Duration.ofSeconds(150), null);
+        metro.createLastStationInLine(Color.BLUE, "СпортивнаяБлу4", Duration.ofSeconds(150), null);
         System.out.println(metro);
         System.out.println("____________________________________________________");
 
         // Подсчет количества перегонов на одной линии.
         Station first = metro.getLines().stream().filter(line -> Color.RED.equals(line.getColor())).findFirst().get().getStations().getFirst();
         Station last = metro.getLines().stream().filter(line -> Color.RED.equals(line.getColor())).findFirst().get().getStations().getLast();
-        Station blue = metro.getLines().stream().filter(line -> Color.BLUE.equals(line.getColor())).findFirst().get().getStations().getLast();
+        Station blue = metro.getLines().stream().filter(line -> Color.BLUE.equals(line.getColor())).findFirst().get().getStations().getFirst();
+        Station blue2 = metro.getLines().stream().filter(line -> Color.BLUE.equals(line.getColor())).findFirst().get().getStations().getLast();
         System.out.println(metro.numberOfRunsBetweenStationsWithinLine(first, last));
 
-        first.setTransferStations(new ArrayList<>(List.of(blue)));
-        blue.setTransferStations(new ArrayList<>(List.of(first)));
+//        first.setTransferStations(new ArrayList<>(List.of(blue)));
+//        blue.setTransferStations(new ArrayList<>(List.of(first)));
 
         // Поиск станции пересадки на линиях
 
@@ -68,8 +72,13 @@ public class Runner {
         Line lineBlue = metro.getLines().stream().filter(l -> Color.BLUE.equals(l.getColor())).findFirst().orElseThrow();
         System.out.println(metro);
 
-        System.out.println(metro.getTransferStation(lineRed, lineBlue));
-        System.out.println(metro.getTransferStation(lineBlue, lineRed));
+//        System.out.println(metro.getTransferStation(lineRed, lineBlue));
+//        System.out.println(metro.getTransferStation(lineBlue, lineRed));
+
+        System.out.println("____________________________________________________");
+
+        System.out.println(metro.numberOfRunsBetweenStationsOutsideLines(first, last));
+        System.out.println(metro.numberOfRunsBetweenStationsOutsideLines(last, blue2));
 
 
 
