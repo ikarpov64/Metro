@@ -13,6 +13,14 @@ public class TicketOffice {
     private static final int MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS = 30;
     private HashMap<LocalDate, BigDecimal> income = new HashMap<>();
 
+    /**
+     * Продажа одноразового билета.
+     * @param station Станция продажи билета.
+     * @param startStation Станция отправления.
+     * @param endStation Станция прибывания.
+     * @param date Дата продажи билета.
+     * @exception SellTicketException Если условия продажи не соблюдены.
+     */
     public void sellTicket(Station station, String startStation, String endStation, LocalDate date)
             throws SellTicketException {
 
@@ -43,6 +51,11 @@ public class TicketOffice {
         updateIncome(date, ticketPrice);
     }
 
+    /**
+     * Продажа билета на месяц.
+     * @param station Станция продажи билета.
+     * @param date Дата продажи билета.
+     */
     public void sellMonthlyTicket(Station station, LocalDate date) {
         Metro metro = station.getMetro();
         String ticketNumber = metro.generateTicketNumber();
@@ -50,6 +63,13 @@ public class TicketOffice {
         updateIncome(date, COST_OF_MONTHLY_TICKET);
     }
 
+    /**
+     * Продление месячного билета (абонемента).
+     * @param station Станция продажи/продления абонемента.
+     * @param ticketNumber Номер билета для продления.
+     * @param date Дата продления абонемента. Срок абонемента увеличивается с даты продления + 30 дней.
+     * @exception RuntimeException если билета не существует.
+     */
     public void subscriptionRenewal(Station station, String ticketNumber, LocalDate date) {
         Metro metro = station.getMetro();
         if (metro.getSubscribers().containsKey(ticketNumber)) {
@@ -60,6 +80,11 @@ public class TicketOffice {
         }
     }
 
+    /**
+     * Обновление доходов.
+     * @param date Дата новой продажи.
+     * @param value Сумма продажи.
+     */
     private void updateIncome(LocalDate date, BigDecimal value) {
         if (income.containsKey(date)) {
             BigDecimal incomeByDate = income.get(date);
