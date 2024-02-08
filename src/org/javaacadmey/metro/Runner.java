@@ -2,136 +2,97 @@ package org.javaacadmey.metro;
 
 import org.javaacadmey.metro.Exception.SellTicketException;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static org.javaacadmey.metro.Color.*;
 
 public class Runner {
     public static void main(String[] args) {
-
+        // 1. Этап
         // Создаем пустое метро
         Metro metro = new Metro();
-        System.out.println(metro); // Вывод: Metro{city='Пермь', lines=[]}
-        System.out.println("____________________________________________________");
 
-        // Пытаемся создать станцию без линий
-        metro.createFirstStationInLine(Color.RED, "Спортивная", null); // Вывод: Line not exist
-        System.out.println(metro); // Вывод: Metro{city='Пермь', lines=[]}
-        System.out.println("____________________________________________________");
+        // Создаем ветки метро
+        metro.createNewLine(RED);
+        metro.createNewLine(BLUE);
 
-        // Создаем ветки метро, красную и синиюю.
-        metro.createNewLine(Color.RED);
-        System.out.println(metro); // Вывод: Metro{city='Пермь', lines=[Line{color=RED, stations=[]}]}
-        metro.createNewLine(Color.RED); // Вывод: Такая линия уже существует. Красная
-        metro.createNewLine(Color.BLUE);
-        System.out.println(metro); // Metro{city='Пермь', lines=[Line{color=BLUE, stations=[]}, Line{color=RED, stations=[]}]}
-        System.out.println("____________________________________________________");
+        // Создаем станции на ветках метро
+        // Начальные станции
+        metro.createFirstStationInLine(RED, "Спортивная", null);
+        metro.createFirstStationInLine(BLUE, "Пацанская", null);
 
-        // Создаем первую станцию на красной ветке
-        metro.createFirstStationInLine(Color.RED, "СпортивнаяRed1", null);
-        System.out.println(metro); // Вывод: Metro{city='Пермь', lines=[Line{color=RED, stations=[Station{name='Спортивная', changeLines=RED}]}, Line{color=BLUE, stations=[]}]}
-        System.out.println("____________________________________________________");
+        // Поочередно вплоть до конечной
+        metro.createLastStationInLine(RED, "Медведковская", Duration.ofSeconds(141), null);
+        metro.createLastStationInLine(RED, "Молодежная", Duration.ofSeconds(118), null);
+        metro.createLastStationInLine(RED, "Пермь 1", Duration.ofSeconds(180), null);
+        metro.createLastStationInLine(RED, "Пермь 2", Duration.ofSeconds(130), null);
+        metro.createLastStationInLine(RED, "Дворец Культуры", Duration.ofSeconds(266), null);
 
-        // Создаем еще одну первую станцию на первой ветке
-        metro.createFirstStationInLine(Color.RED, "СпортивнаяRed1", null);
-        System.out.println(metro); // Вывод: Line is not empty, cannot create first station in Line
-        System.out.println("____________________________________________________");
+        metro.createLastStationInLine(BLUE, "Улица Кирова", Duration.ofSeconds(90), null);
+        metro.createLastStationInLine(BLUE, "Тяжмаш", Duration.ofSeconds(107), null);
+        metro.createLastStationInLine(BLUE, "Нижнекамская", Duration.ofSeconds(199), null);
+        metro.createLastStationInLine(BLUE, "Соборная", Duration.ofSeconds(108), null);
 
-        // Создаем станцию на синей ветке с существующим именем.
-        metro.createFirstStationInLine(Color.BLUE, "СпортивнаяBlue1", null);
+        // Устанавливаем станции пересадки
+        metro.getStationByName("Пермь 1").setTransferStations(List.of(metro.getStationByName("Тяжмаш")));
+        metro.getStationByName("Тяжмаш").setTransferStations(List.of(metro.getStationByName("Пермь 1")));
+
         System.out.println(metro);
-        // Station is already exist.
-        // Metro{city='Пермь', lines=[Line{color=RED, stations=[Station{name='Спортивная', changeLines=RED}, Station{name='Спортивная1', changeLines=RED}]}, Line{color=BLUE, stations=[]}]}
-        System.out.println("____________________________________________________");
+        System.out.println("_______________________________________________");
 
-        metro.createLastStationInLine(Color.RED, "СпортивнаяRed2", Duration.ofSeconds(150), null);
-        metro.createLastStationInLine(Color.RED, "СпортивнаяRed3", Duration.ofSeconds(150), null);
-        metro.createLastStationInLine(Color.RED, "СпортивнаяRed4", Duration.ofSeconds(150), null);
-        metro.createLastStationInLine(Color.BLUE, "СпортивнаяBlue2", Duration.ofSeconds(150), null);
-        metro.createLastStationInLine(Color.BLUE, "СпортивнаяBlue3", Duration.ofSeconds(150), null);
-        metro.createLastStationInLine(Color.BLUE, "СпортивнаяBlue4", Duration.ofSeconds(150), null);
-        System.out.println(metro);
-        System.out.println("____________________________________________________");
+        // Получаем станцию пересадки с одной линии на другую.
+        Station stationRedToBlue = metro.getTransferStation(RED, BLUE);
+        Station stationBlueToRed = metro.getTransferStation(BLUE, RED);
+        System.out.println("Станция пересадки с красной линии на синюю: " + stationRedToBlue.getName());
+        System.out.println("Станция пересадки с синей линии на красную: " + stationBlueToRed.getName());
+        System.out.println("_______________________________________________");
 
-        // Подсчет количества перегонов на одной линии.
-        Station firstRed = metro.getStationByName("СпортивнаяRed1");
-        Station secondRed = metro.getStationByName("СпортивнаяRed2");
-        Station thirdRed = metro.getStationByName("СпортивнаяRed3");
-        Station fourthRed = metro.getStationByName("СпортивнаяRed4");
-        Station firstBlue = metro.getStationByName("СпортивнаяBlue1");
-        Station secondBlue = metro.getStationByName("СпортивнаяBlue2");
-        Station thirdBlue = metro.getStationByName("СпортивнаяBlue3");
-        Station fourthBlue = metro.getStationByName("СпортивнаяBlue4");
+        // Считаем количество перегонов.
+        Station firstRed = metro.getStationByName("Спортивная");
+        Station lastBlue = metro.getStationByName("Соборная");
 
-//        System.out.println(metro.numberOfRunsBetweenStationsWithinLine(fourthRed, fourthBlue));
+        int numberOfRuns = metro.numberOfRunsBetweenStationsOutsideLines(firstRed, lastBlue);
+        System.out.printf("Количество перегонов со станции %s на станцию %s: %s\n",
+                firstRed.getName(),
+                lastBlue.getName(),
+                numberOfRuns);
+        System.out.println("_______________________________________________");
 
-        firstRed.setTransferStations(new ArrayList<>(List.of(firstBlue)));
-        firstBlue.setTransferStations(new ArrayList<>(List.of(firstRed)));
-
-        // Поиск станции пересадки на линиях
-        Line lineRed = metro.getLine(Color.RED);
-        Line lineBlue = metro.getLine(Color.BLUE);
-        System.out.println(metro);
-
-        System.out.println(metro.getTransferStation(lineRed, lineBlue));
-        System.out.println(metro.getTransferStation(lineBlue, lineRed));
-
-        System.out.println("____________________________________________________");
-
-        System.out.println(metro.numberOfRunsBetweenStationsOutsideLines(firstRed, firstBlue));
-        System.out.println(metro.numberOfRunsBetweenStationsOutsideLines(fourthBlue, fourthRed));
-
-        System.out.println("____________________________________________________");
-
+        // Продаем билеты
         try {
-            firstRed.sellTicket("СпортивнаяRed1", "СпортивнаяBlue1");
-//        firstRed.sellTicket("СпортивнаяRed4", "СпортивнаяBlue4");
-        } catch (SellTicketException e) {
-            System.out.println("Не удалоась продать билет. " + e);
+            firstRed.sellTicket("Спортивная", "Соборная");
+            firstRed.sellTicket("Спортивная", "Молодежная");
+            lastBlue.sellTicket("Соборная", "Спортивная");
+            lastBlue.sellTicket("Соборная", "Тяжмаш");
+            lastBlue.sellTicket("Соборная", "Пермь 1");
+            lastBlue.sellTicket("Соборная", "Дворец Культуры");
+        } catch (SellTicketException exception) {
+            System.out.println(exception.getMessage());
         }
-        System.out.println(firstRed.ticketOffice);
 
-        firstRed.sellMonthlyTicket();
-        secondRed.sellMonthlyTicket();
-        thirdRed.sellMonthlyTicket();
-        fourthRed.sellMonthlyTicket();
-
+        // Абонементы.
         firstRed.sellMonthlyTicket();
         firstRed.sellMonthlyTicket();
         firstRed.sellMonthlyTicket();
-        firstRed.sellMonthlyTicket();
-        firstBlue.sellMonthlyTicket();
-        secondBlue.sellMonthlyTicket();
-        thirdBlue.sellMonthlyTicket();
-        fourthBlue.sellMonthlyTicket();
-        firstBlue.sellMonthlyTicket();
-        firstBlue.sellMonthlyTicket();
+        lastBlue.sellMonthlyTicket();
+        lastBlue.sellMonthlyTicket();
+        lastBlue.sellMonthlyTicket();
 
-        System.out.println(firstBlue.ticketOffice);
-        System.out.println(metro.getSubscribers());
+        System.out.println("Проданные абонементы: " + metro.getSubscribers());
 
-        LocalDate nowMinus30Days = LocalDate.now().minusDays(32);
-        LocalDate nowPlus30Days = LocalDate.now().plusDays(30);
-
-        boolean ticketExpiration = metro.checkMonthlyTicketExpirationDate("a0002", nowPlus30Days);
-
+        // Проверяем абонемент на срок действия, через 35 дней он будет неактивным.
+        boolean ticketExpiration = metro.checkMonthlyTicketExpirationDate(
+                "a0005", LocalDate.now().plusDays(35));
         System.out.println(ticketExpiration);
 
-        firstBlue.subscriptionRenewal("a0000", nowPlus30Days);
-        System.out.println(metro.getSubscribers());
+        // Продлеваем абонемент через 40 дней
+        firstRed.subscriptionRenewal("a0005", LocalDate.now().plusDays(40));
+        System.out.println("Проданные абонементы: " + metro.getSubscribers());
+        System.out.println("__________________________________________________");
 
-        System.out.println("__________________________________");
-
+        //Печатаем доходы со всех касс:
         metro.getTotalIncome();
-
-
-
-
-
     }
 }

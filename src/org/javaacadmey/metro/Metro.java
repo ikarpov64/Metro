@@ -13,11 +13,16 @@ public class Metro {
     private Set<Line> lines = new HashSet<>();
     private HashMap<String, LocalDate> subscribers = new HashMap<>();
 
+    /**
+     * Создание новой линии метро.
+     * @param color Цвет линии
+     * @exception RuntimeException если линия с таким цветом существует.
+     */
     public void createNewLine(Color color) {
         if (!isLineExists(color)) {
             lines.add(new Line(color, this));
         } else {
-            System.out.println("Такая линия уже существует. " + color.color);
+            throw new RuntimeException("Такая линия уже существует. " + color.color);
         }
     }
 
@@ -34,6 +39,7 @@ public class Metro {
      * Проверка срока действия проездного билета.
      * @param ticketNumber Уникальный номер проездного билета.
      * @param date Дата проверки проездного билета.
+     * @return true если билет просрочен
      */
     public boolean checkMonthlyTicketExpirationDate(String ticketNumber, LocalDate date) {
         LocalDate expirationDate = subscribers.get(ticketNumber);
@@ -63,17 +69,15 @@ public class Metro {
                                          String name,
                                          List<Station> transferStations) {
         if (!isLineExists(color)) {
-            System.out.println("Line not exist. Build a subway line first");
-            return;
+            throw new RuntimeException("Линии не существует. Вначале создайте линию метро.");
         }
 
         if (!lineIsEmpty(color)) {
-            System.out.println("Line is not empty, cannot create first station in Line");
-            return;
+            throw new RuntimeException("На линии уже существует начальная станция.");
         }
 
         if (isStationExists(name)) {
-            System.out.println("Station is already exist.");
+            throw new RuntimeException("Линии с таким именем уже существует в метро.");
         } else {
             Line currentLine = getLine(color);
             currentLine.getStations().add(new Station(name, currentLine,this));
@@ -92,28 +96,29 @@ public class Metro {
                                         List<Station> transferStations) {
 
         if (!isLineExists(color)) {
-            System.out.println("Line not exist. Build a subway line first");
-            return;
+            throw new RuntimeException("Линии не существует. Вначале создайте линию метро.");
         }
 
         if (isStationExists(name)) {
-            System.out.println("Station is already exist.");
-            return;
+            throw new RuntimeException("Линии с таким именем уже существует в метро.");
         }
 
         if (duration.getSeconds() == 0) {
-            System.out.println("Transit time cannot be zero");
-            return;
+            throw new RuntimeException("Время перегона не может быть равным нулю.");
         }
 
         if (lineIsEmpty(color)) {
-            System.out.println("The first station does not exist, create the first station in the line first");
-            return;
+            throw new RuntimeException("Начальной станции не существует, вначале создайте начальную станцию.");
         }
 
         Line currentLine = getLine(color);
         LinkedList<Station> stations = currentLine.getStations();
         Station lastStation = stations.getLast();
+
+        if (lastStation.getNextStation() != null) {
+            throw new RuntimeException("Невозможно создать станцию. Предыдущая станция уже имеет следующую.");
+        }
+
         Station currentStation = new Station(name, currentLine, this);
         currentStation.setPrevStation(lastStation);
         lastStation.setTimeToNextStation(duration);
@@ -141,23 +146,11 @@ public class Metro {
      * @return Линия метро.
      * @exception NoSuchElementException если линии не существует.
      */
-    public Line getLine(Color color) {
+    private Line getLine(Color color) {
         return lines.stream()                                   // Получаем поток линий
                 .filter(line -> color.equals(line.getColor()))  // Фильтруем по цвету линии
                 .findFirst()                                    // Берем первую попавшуюся линию по цвету
                 .orElseThrow();                                 // Возвращаем найденную линию
-    }
-
-    private Station isPrevisionStationExist(Color color) {
-//        try {
-//            Line line = getLine(color);
-//            line.getStations().stream().
-//        }
-//
-//        return line.map(Line::getStations)
-//                .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
-//                .orElse(null);
-        return null;
     }
 
     /**
@@ -166,11 +159,25 @@ public class Metro {
      * @param endLine линия на которую осуществляется пересадка.
      * @return Станция на линии startLine с которой можно осуществить пересадку.
      */
-    public Station getTransferStation(Line startLine, Line endLine) {
+    private Station getTransferStation(Line startLine, Line endLine) {
         return endLine.getStations()
                 .stream()
                 .flatMap(station -> station.getTransferStations().stream())
                 .filter(station -> startLine.equals(station.getLine()))
+                .findFirst().orElseThrow();
+    }
+
+    /**
+     * Определение станции пересадки с одной линии на другую.
+     * @param startLine цвет линии с которой осуществляется пересадка.
+     * @param endLine цвет линии на которую осуществляется пересадка.
+     * @return Станция на линии startLine с которой можно осуществить пересадку.
+     */
+    public Station getTransferStation(Color startLine, Color endLine) {
+        return getLine(endLine).getStations()
+                .stream()
+                .flatMap(station -> station.getTransferStations().stream())
+                .filter(station -> getLine(startLine).equals(station.getLine()))
                 .findFirst().orElseThrow();
     }
 
@@ -194,9 +201,8 @@ public class Metro {
             numbersOfRuns += numberOfRunsBetweenStationsWithinLine(transferStationEndLine, endStation);
             return numbersOfRuns;
         } catch (NoSuchElementException ignored) {
-            System.out.printf("Невозможно проложить маршрут от станции %s к станции %s.\n",
-                    startStation, endStation);
-            return -1;
+            throw new RuntimeException(String.format("Невозможно проложить маршрут от станции %s к станции %s.\n",
+                    startStation.getName(), endStation.getName()));
         }
     }
 
@@ -207,7 +213,7 @@ public class Metro {
      * @param endStation Конечная станция, до которой хотим доехать.
      * @return RuntimeException если нет перегона между станциями.
      */
-    public int numberOfRunsBetweenStationsWithinLine(Station startStation, Station endStation) {
+    private int numberOfRunsBetweenStationsWithinLine(Station startStation, Station endStation) {
         int numberOfRuns = calculateNumberOfRunsForwardDirection(startStation, endStation);
         if (numberOfRuns != -1) {
             return numberOfRuns;

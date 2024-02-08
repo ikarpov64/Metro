@@ -26,14 +26,6 @@ public class Line {
     }
 
     @Override
-    public String toString() {
-        return "Line{" +
-                "color=" + color +
-                ", stations=" + stations +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -44,5 +36,13 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(color, metro);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "color=" + color +
+                ", stations=" + stations +
+                '}';
     }
 }

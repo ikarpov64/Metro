@@ -32,12 +32,12 @@ public class TicketOffice {
         Station startingStation = station.getMetro().getStationByName(startStation);
         Station finalStation = station.getMetro().getStationByName(endStation);
 
-        if (finalStation.equals(metro.getTransferStation(finalStation.getLine(), startingStation.getLine()))) {
-            throw new SellTicketException("Между этими станциями движения нет.");
-        }
-
         int numberOfRuns = station.getMetro()
                 .numberOfRunsBetweenStationsOutsideLines(startingStation, finalStation);
+
+        if (numberOfRuns == 0) {
+            throw new SellTicketException("Между этими станциями движения нет.");
+        }
 
         BigDecimal ticketPrice = BigDecimal.valueOf(numberOfRuns).multiply(COST_OF_ONE_RUN).add(TAX);
         updateIncome(date, ticketPrice);

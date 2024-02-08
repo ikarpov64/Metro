@@ -5,6 +5,7 @@ import org.javaacadmey.metro.Exception.SellTicketException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Station {
     private final String name;
@@ -14,7 +15,7 @@ public class Station {
     private Station prevStation;
     private Station nextStation;
     private Duration timeToNextStation;
-    private ArrayList<Station> transferStations = new ArrayList<>();
+    private List<Station> transferStations = new ArrayList<>();
 
 
     public Station(String name, Station prevStation,
@@ -55,11 +56,11 @@ public class Station {
         return line;
     }
 
-    public ArrayList<Station> getTransferStations() {
+    public List<Station> getTransferStations() {
         return transferStations;
     }
 
-    public void setTransferStations(ArrayList<Station> transferStations) {
+    public void setTransferStations(List<Station> transferStations) {
         this.transferStations = transferStations;
     }
 
