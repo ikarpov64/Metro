@@ -67,6 +67,10 @@ public class Station {
         ticketOffice.sellTicket(this, startStation, endStation, LocalDate.now());
     }
 
+    public void sellMonthlyTicket() {
+        ticketOffice.sellMonthlyTicket(this, LocalDate.now());
+    }
+
     public Metro getMetro() {
         return metro;
     }

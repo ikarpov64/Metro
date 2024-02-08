@@ -5,11 +5,11 @@ import org.javaacadmey.metro.Exception.SellTicketException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 
 public class TicketOffice {
     private final BigDecimal TAX = BigDecimal.valueOf(20);
     private final BigDecimal COST_OF_ONE_RUN = BigDecimal.valueOf(5);
+    private final BigDecimal COST_OF_MONTHLY_TICKET = BigDecimal.valueOf(3000);
     private HashMap<LocalDate, BigDecimal> income = new HashMap<>();
 
     public void sellTicket(Station station, String startStation, String endStation, LocalDate date)
@@ -38,22 +38,26 @@ public class TicketOffice {
         }
 
         BigDecimal ticketPrice = BigDecimal.valueOf(numberOfRuns).multiply(COST_OF_ONE_RUN).add(TAX);
+        updateIncome(date, ticketPrice);
+    }
 
+    public void sellMonthlyTicket(Station station, LocalDate date) {
+        Metro metro = station.getMetro();
+        String ticketNumber = metro.generateTicketNumber();
+        metro.
+
+        updateIncome(date, COST_OF_MONTHLY_TICKET);
+
+    }
+
+    private void updateIncome(LocalDate date, BigDecimal value) {
         if (income.containsKey(date)) {
             BigDecimal incomeByDate = income.get(date);
-            income.put(date, incomeByDate.add(ticketPrice));
+            income.put(date, incomeByDate.add(value));
         } else {
-            income.put(date, ticketPrice);
+            income.put(date, value);
         }
-
     }
-
-    private void checkStations(Station station, String startStation, String endStation)
-            throws SellTicketException {
-
-
-    }
-
 
     @Override
     public String toString() {

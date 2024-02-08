@@ -1,17 +1,54 @@
 package org.javaacadmey.metro;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Metro {
+    private static final String TICKET_TEMPLATE = "a%04d";
+    private static final int SUBSCRIBERS_LIMIT = 9999;
+    private static final int MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS = 30;
     private final String city = "Пермь";
     private Set<Line> lines = new HashSet<>();
+    private HashMap<String, LocalDate> subscribers = new HashMap<>();
 
     public void createNewLine(Color color) {
         if (!isLineExists(color)) {
             lines.add(new Line(color, this));
         } else {
             System.out.println("Такая линия уже существует. " + color.color);
+        }
+    }
+
+    /**
+     * Добавление номера билета в список абонентов.
+     * @param ticketNumber Уникальный номер проездного билета.
+     * @param date Дата окончания срока действия проездного билета.
+     */
+    public void addSubscribers(String ticketNumber, LocalDate date) {
+        subscribers.put(ticketNumber, date.plusDays(MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS));
+    }
+
+    /**
+     * Проверка срока действия проездного билета.
+     * @param ticketNumber Уникальный номер проездного билета.
+     * @param date Дата проверки проездного билета.
+     */
+    public boolean checkMonthlyTicketExpirationDate(String ticketNumber, LocalDate date) {
+        LocalDate expirationDate = subscribers.get(ticketNumber);
+        return expirationDate.isBefore(date);
+    }
+
+    /**
+     * Генерация уникального номера на проездной билет.
+     * @return Номер проездного билета.
+     * @exception RuntimeException при достижении лимита проданных билетов.
+     */
+    public String generateTicketNumber() {
+        if (subscribers.size() < SUBSCRIBERS_LIMIT) {
+            return String.format(TICKET_TEMPLATE, subscribers.size());
+        } else {
+            throw new RuntimeException("Закончились абонементы на проезд.");
         }
     }
 
@@ -83,15 +120,6 @@ public class Metro {
         stations.add(currentStation);
     }
 
-    public void sellTicket(String startStation, String endStation) {
-        try {
-            Station startingStation = getStationByName(startStation);
-            Station finalStation = getStationByName(endStation);
-        } catch (RuntimeException exception) {
-            System.out.println("Станции не существует");
-        }
-    }
-
     /**
      * Получение Станции по имени.
      * @param name Название станции
@@ -127,7 +155,6 @@ public class Metro {
 //        }
 //        return null;
     }
-
 
     /**
      * Определение станции пересадки с одной линии на другую.
