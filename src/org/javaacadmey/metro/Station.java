@@ -102,8 +102,10 @@ public class Station {
                 "name='" + name + '\'' +
                 ", changeLines="
                 + transferStations.stream()
-                .map(Station::getName)
-                .reduce((name1, name2) -> name1 + ", " + name2)
+                .map(Station::getLine)
+                .map(Line::getColor)
+                .map(color -> color.color)
+                .reduce(String::concat)
                 .orElse(null) +
                 '}';
     }
