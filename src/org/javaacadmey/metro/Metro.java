@@ -1,3 +1,5 @@
+package org.javaacadmey.metro;
+
 import java.time.Duration;
 import java.util.*;
 
@@ -81,7 +83,29 @@ public class Metro {
         stations.add(currentStation);
     }
 
-    private Line getLine(Color color) {
+    public void sellTicket(String startStation, String endStation) {
+        try {
+            Station startingStation = getStationByName(startStation);
+            Station finalStation = getStationByName(endStation);
+        } catch (RuntimeException exception) {
+            System.out.println("Станции не существует");
+        }
+    }
+
+    /**
+     * Получение Станции по имени.
+     * @param name Название станции
+     * @return найденная станция во всех линиях.
+     */
+    public Station getStationByName(String name) {
+        return lines.stream()
+                .flatMap(line -> line.getStations().stream())
+                .filter(station -> name.equals(station.getName()))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public Line getLine(Color color) {
         return lines.stream()                                   // Получаем поток линий
                 .filter(line -> color.equals(line.getColor()))  // Фильтруем по цвету линии
                 .findFirst()                                    // Берем первую попавшуюся линию по цвету
@@ -90,13 +114,13 @@ public class Metro {
 
     private Station isPrevisionStationExist(Color color) {
 //        if (!lineIsEmpty(color)) {
-            Optional<Line> line = lines.stream()
-                    .filter(l -> l.getColor() == color)
-                    .findFirst();
+        Optional<Line> line = lines.stream()
+                .filter(l -> l.getColor() == color)
+                .findFirst();
 
-            return line.map(Line::getStations)
-                    .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
-                    .orElse(null);
+        return line.map(Line::getStations)
+                .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
+                .orElse(null);
 
 //            Station station = lines.stream().filter(line -> line.getColor() == color)
 //                    .findFirst().get().getStations().getLast();
@@ -162,9 +186,9 @@ public class Metro {
             return numberOfRuns;
         }
         throw new RuntimeException("Нет пути из станции "
-                    + startStation.getName()
-                    + " в станцию "
-                    + endStation.getName());
+                + startStation.getName()
+                + " в станцию "
+                + endStation.getName());
     }
 
     /**
@@ -219,7 +243,7 @@ public class Metro {
     /**
      * Проверка на существование станции по имени.
      */
-    private boolean isStationExists(String name) {
+    public boolean isStationExists(String name) {
         return lines.stream()                                          // Получаем поток линий
                 .flatMap(line -> line.getStations().stream())          // Преобразуем каждую линию в поток её станций
                 .anyMatch(station -> name.equals(station.getName()));  // Проверяем существование станции по имени

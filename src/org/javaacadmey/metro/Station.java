@@ -1,11 +1,16 @@
+package org.javaacadmey.metro;
+
+import org.javaacadmey.metro.Exception.StationNotExistException;
+
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Station {
     private final String name;
     private final Line line;
     private final Metro metro;
-    private final TicketOffice ticketOffice = new TicketOffice();
+    public final TicketOffice ticketOffice = new TicketOffice();
     private Station prevStation;
     private Station nextStation;
     private Duration timeToNextStation;
@@ -56,6 +61,10 @@ public class Station {
 
     public void setTransferStations(ArrayList<Station> transferStations) {
         this.transferStations = transferStations;
+    }
+
+    public void sellTicket(String startStation, String endStation) throws StationNotExistException {
+        ticketOffice.sellTicket(this, startStation, endStation, LocalDate.now());
     }
 
     public Metro getMetro() {

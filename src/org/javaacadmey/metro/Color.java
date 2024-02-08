@@ -1,3 +1,5 @@
+package org.javaacadmey.metro;
+
 public enum Color {
     RED("Красная"), BLUE("Синияя");
 
