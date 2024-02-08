@@ -1,6 +1,6 @@
 package org.javaacadmey.metro;
 
-import org.javaacadmey.metro.Exception.StationNotExistException;
+import org.javaacadmey.metro.Exception.SellTicketException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -63,7 +63,7 @@ public class Station {
         this.transferStations = transferStations;
     }
 
-    public void sellTicket(String startStation, String endStation) throws StationNotExistException {
+    public void sellTicket(String startStation, String endStation) throws SellTicketException {
         ticketOffice.sellTicket(this, startStation, endStation, LocalDate.now());
     }
 

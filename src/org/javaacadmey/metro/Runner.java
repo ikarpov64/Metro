@@ -1,6 +1,6 @@
 package org.javaacadmey.metro;
 
-import org.javaacadmey.metro.Exception.StationNotExistException;
+import org.javaacadmey.metro.Exception.SellTicketException;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -86,8 +86,8 @@ public class Runner {
         try {
             firstRed.sellTicket("СпортивнаяRed1", "СпортивнаяBlue1");
 //        firstRed.sellTicket("СпортивнаяRed4", "СпортивнаяBlue4");
-        } catch (StationNotExistException e) {
-            System.out.println("Не удалоась продать билет");
+        } catch (SellTicketException e) {
+            System.out.println("Не удалоась продать билет. " + e);
         }
         System.out.println(firstRed.ticketOffice);
 
