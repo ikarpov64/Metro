@@ -11,7 +11,6 @@ public class Line {
     public Line(Color color, Metro metro) {
         this.color = color;
         this.metro = metro;
-
     }
 
     public Color getColor() {

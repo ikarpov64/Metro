@@ -10,6 +10,7 @@ public class TicketOffice {
     private final BigDecimal TAX = BigDecimal.valueOf(20);
     private final BigDecimal COST_OF_ONE_RUN = BigDecimal.valueOf(5);
     private final BigDecimal COST_OF_MONTHLY_TICKET = BigDecimal.valueOf(3000);
+    private static final int MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS = 30;
     private HashMap<LocalDate, BigDecimal> income = new HashMap<>();
 
     public void sellTicket(Station station, String startStation, String endStation, LocalDate date)
@@ -30,12 +31,13 @@ public class TicketOffice {
 
         Station startingStation = station.getMetro().getStationByName(startStation);
         Station finalStation = station.getMetro().getStationByName(endStation);
-        int numberOfRuns = station.getMetro()
-                .numberOfRunsBetweenStationsOutsideLines(startingStation, finalStation);
 
-        if (numberOfRuns == 0) {
+        if (finalStation.equals(metro.getTransferStation(finalStation.getLine(), startingStation.getLine()))) {
             throw new SellTicketException("Между этими станциями движения нет.");
         }
+
+        int numberOfRuns = station.getMetro()
+                .numberOfRunsBetweenStationsOutsideLines(startingStation, finalStation);
 
         BigDecimal ticketPrice = BigDecimal.valueOf(numberOfRuns).multiply(COST_OF_ONE_RUN).add(TAX);
         updateIncome(date, ticketPrice);
@@ -44,10 +46,18 @@ public class TicketOffice {
     public void sellMonthlyTicket(Station station, LocalDate date) {
         Metro metro = station.getMetro();
         String ticketNumber = metro.generateTicketNumber();
-        metro.
-
+        metro.addSubscribers(ticketNumber, date.plusDays(MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS));
         updateIncome(date, COST_OF_MONTHLY_TICKET);
+    }
 
+    public void subscriptionRenewal(Station station, String ticketNumber, LocalDate date) {
+        Metro metro = station.getMetro();
+        if (metro.getSubscribers().containsKey(ticketNumber)) {
+            metro.addSubscribers(ticketNumber, date.plusDays(MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS));
+            updateIncome(date, COST_OF_MONTHLY_TICKET);
+        } else {
+            throw new RuntimeException("Нельзя продлить абонемент, номера билета не существует.");
+        }
     }
 
     private void updateIncome(LocalDate date, BigDecimal value) {
@@ -57,6 +67,10 @@ public class TicketOffice {
         } else {
             income.put(date, value);
         }
+    }
+
+    public HashMap<LocalDate, BigDecimal> getIncome() {
+        return income;
     }
 
     @Override

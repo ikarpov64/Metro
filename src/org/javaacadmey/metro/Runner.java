@@ -2,9 +2,14 @@ package org.javaacadmey.metro;
 
 import org.javaacadmey.metro.Exception.SellTicketException;
 
+import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Runner {
     public static void main(String[] args) {
@@ -90,6 +95,41 @@ public class Runner {
             System.out.println("Не удалоась продать билет. " + e);
         }
         System.out.println(firstRed.ticketOffice);
+
+        firstRed.sellMonthlyTicket();
+        secondRed.sellMonthlyTicket();
+        thirdRed.sellMonthlyTicket();
+        fourthRed.sellMonthlyTicket();
+
+        firstRed.sellMonthlyTicket();
+        firstRed.sellMonthlyTicket();
+        firstRed.sellMonthlyTicket();
+        firstRed.sellMonthlyTicket();
+        firstBlue.sellMonthlyTicket();
+        secondBlue.sellMonthlyTicket();
+        thirdBlue.sellMonthlyTicket();
+        fourthBlue.sellMonthlyTicket();
+        firstBlue.sellMonthlyTicket();
+        firstBlue.sellMonthlyTicket();
+
+        System.out.println(firstBlue.ticketOffice);
+        System.out.println(metro.getSubscribers());
+
+        LocalDate nowMinus30Days = LocalDate.now().minusDays(32);
+        LocalDate nowPlus30Days = LocalDate.now().plusDays(30);
+
+        boolean ticketExpiration = metro.checkMonthlyTicketExpirationDate("a0002", nowPlus30Days);
+
+        System.out.println(ticketExpiration);
+
+        firstBlue.subscriptionRenewal("a0000", nowPlus30Days);
+        System.out.println(metro.getSubscribers());
+
+        System.out.println("__________________________________");
+
+        metro.getTotalIncome();
+
+
 
 
 

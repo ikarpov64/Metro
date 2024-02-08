@@ -1,13 +1,14 @@
 package org.javaacadmey.metro;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Metro {
     private static final String TICKET_TEMPLATE = "a%04d";
     private static final int SUBSCRIBERS_LIMIT = 9999;
-    private static final int MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS = 30;
     private final String city = "Пермь";
     private Set<Line> lines = new HashSet<>();
     private HashMap<String, LocalDate> subscribers = new HashMap<>();
@@ -26,7 +27,7 @@ public class Metro {
      * @param date Дата окончания срока действия проездного билета.
      */
     public void addSubscribers(String ticketNumber, LocalDate date) {
-        subscribers.put(ticketNumber, date.plusDays(MONTHLY_TICKET_VALIDITY_PERIOD_IN_DAYS));
+        subscribers.put(ticketNumber, date);
     }
 
     /**
@@ -124,6 +125,7 @@ public class Metro {
      * Получение Станции по имени.
      * @param name Название станции
      * @return найденная станция во всех линиях.
+     * @exception NoSuchElementException если станции не существует.
      */
     public Station getStationByName(String name) {
         return lines.stream()
@@ -133,6 +135,12 @@ public class Metro {
                 .orElseThrow();
     }
 
+    /**
+     * Получение линии метро по цвету.
+     * @param color Цвет линии метро которую ищем.
+     * @return Линия метро.
+     * @exception NoSuchElementException если линии не существует.
+     */
     public Line getLine(Color color) {
         return lines.stream()                                   // Получаем поток линий
                 .filter(line -> color.equals(line.getColor()))  // Фильтруем по цвету линии
@@ -141,19 +149,15 @@ public class Metro {
     }
 
     private Station isPrevisionStationExist(Color color) {
-//        if (!lineIsEmpty(color)) {
-        Optional<Line> line = lines.stream()
-                .filter(l -> l.getColor() == color)
-                .findFirst();
-
-        return line.map(Line::getStations)
-                .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
-                .orElse(null);
-
-//            Station station = lines.stream().filter(line -> line.getColor() == color)
-//                    .findFirst().get().getStations().getLast();
+//        try {
+//            Line line = getLine(color);
+//            line.getStations().stream().
 //        }
-//        return null;
+//
+//        return line.map(Line::getStations)
+//                .flatMap(stations -> stations.isEmpty() ? Optional.empty() : Optional.of(stations.getLast()))
+//                .orElse(null);
+        return null;
     }
 
     /**
@@ -276,8 +280,20 @@ public class Metro {
                 .anyMatch(station -> name.equals(station.getName()));  // Проверяем существование станции по имени
     }
 
-    public Set<Line> getLines() {
-        return lines;
+    public void getTotalIncome() {
+        Map<LocalDate, BigDecimal> incomeByDate =
+                lines.stream() // Получаем поток линий
+                .flatMap(line -> line.getStations().stream())    // Преобразуем каждую линию в поток её станций
+                .map(Station::getTicketOffice)                   // Получаем поток касс
+                .flatMap(ticketOffice -> ticketOffice.getIncome().entrySet().stream()) // Получаем поток записей доходов
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, BigDecimal::add)); //
+
+        incomeByDate.forEach((date, income) ->
+                System.out.println(date + "=" + income));
+    }
+
+    public HashMap<String, LocalDate> getSubscribers() {
+        return subscribers;
     }
 
     @Override

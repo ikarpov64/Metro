@@ -71,6 +71,10 @@ public class Station {
         ticketOffice.sellMonthlyTicket(this, LocalDate.now());
     }
 
+    public void subscriptionRenewal(String ticketNumber, LocalDate date) {
+        ticketOffice.subscriptionRenewal(this, ticketNumber, date);
+    }
+
     public Metro getMetro() {
         return metro;
     }
@@ -85,6 +89,10 @@ public class Station {
 
     public void setNextStation(Station nextStation) {
         this.nextStation = nextStation;
+    }
+
+    public TicketOffice getTicketOffice() {
+        return ticketOffice;
     }
 
     @Override
