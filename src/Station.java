@@ -5,6 +5,7 @@ public class Station {
     private final String name;
     private final Line line;
     private final Metro metro;
+    private final TicketOffice ticketOffice = new TicketOffice();
     private Station prevStation;
     private Station nextStation;
     private Duration timeToNextStation;

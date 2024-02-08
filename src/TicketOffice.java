@@ -3,7 +3,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 
 public class TicketOffice {
-
     private final BigDecimal TAX = BigDecimal.valueOf(20);
     private final BigDecimal COST_OF_ONE_RUN = BigDecimal.valueOf(5);
     private HashMap<LocalDate, BigDecimal> income = new HashMap<>();
