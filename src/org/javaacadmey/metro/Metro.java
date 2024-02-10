@@ -291,9 +291,11 @@ public class Metro {
         Map<LocalDate, BigDecimal> incomeByDate =
                 lines.stream() // Получаем поток линий
                 .flatMap(line -> line.getStations().stream())    // Преобразуем каждую линию в поток её станций
-                .map(Station::getTicketOffice)                   // Получаем поток касс
-                .flatMap(ticketOffice -> ticketOffice.getIncome().entrySet().stream()) // Получаем поток записей доходов
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, BigDecimal::add)); //
+                .flatMap(station -> station.getTicketOffice().getIncome().entrySet().stream()) // Получаем поток записей доходов
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        BigDecimal::add));
 
         incomeByDate.forEach((date, income) ->
                 System.out.println(date + "=" + income));
